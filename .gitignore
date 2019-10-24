@@ -1,0 +1,12 @@
+# Ignore all folders except local_src
+/configs
+/platforms
+/selected_toolchain
+/projectroot
+/src
+/platform-energymicro-efm32gg-dk3750
+/rules
+/tests
+README
+selected_platformconfig
+selected_ptxconfig
