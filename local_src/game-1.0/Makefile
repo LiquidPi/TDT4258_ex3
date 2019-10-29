@@ -10,6 +10,8 @@ CFLAGS += -O2 -g -Wall #-Wsign-compare -Wfloat-equal -Wformat-security #-Werror
 CPPFLAGS +=
 LDFLAGS +=
 
+game: game.c gwint.c
+	gcc $^ -l glut -o $@
 
 all: game
 
