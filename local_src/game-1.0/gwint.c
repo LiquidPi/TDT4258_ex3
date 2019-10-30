@@ -3,20 +3,15 @@
 #include <GL/glut.h> //OpenGL
 
 #include "gwint.h"
+#include "drawapi.h"
 
-const int WINDOW_W = 320; //pixels
-const int WINDOW_H = 240; //pixels
-
-void SetupOfWindow(int* argc, char** argv, struct color default_clear_color)
+void SetupOfWindow(int* argc, char** argv)
 {
 	glutInit(argc, argv);
 	glutCreateWindow("Development Screen");
 	glutInitWindowSize(WINDOW_W, WINDOW_H);
 	glutInitWindowPosition(50, 50);
-	glClearColor(default_clear_color.red,   \
-				 default_clear_color.green, \
-				 default_clear_color.blue,  \
-				 default_clear_color.alpha);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glutDisplayFunc(ClearWindow);
 	UpdateWindow();
 }
@@ -45,6 +40,19 @@ void Draw(struct pixel p[], int size)
 			//Draw
 			glVertex2f(x, y);
 		}
+	glEnd();
+}
+
+void DrawPixel(int x, int y, uint32_t color) {
+	glBegin(GL_POINTS);
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	float xf = -1.0f + ((float)x * 2) / (float)WINDOW_W;
+	float yf = -1.0f + ((float)y * 2) / (float)WINDOW_H;
+	
+	//Draw
+	glVertex2f(xf, yf);
+
 	glEnd();
 }
 
