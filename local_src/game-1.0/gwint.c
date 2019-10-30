@@ -4,41 +4,51 @@
 
 #include "gwint.h"
 
-const int WINDOW_W = 320;
-const int WINDOW_H = 240;
+const int WINDOW_W = 320; //pixels
+const int WINDOW_H = 240; //pixels
 
-void Setup(int* argc, char** argv)
+void SetupOfWindow(int* argc, char** argv, struct color default_clear_color)
 {
-	//Setup openGL window
 	glutInit(argc, argv);
-	glutCreateWindow("game");
+	glutCreateWindow("Development Screen");
 	glutInitWindowSize(WINDOW_W, WINDOW_H);
 	glutInitWindowPosition(50, 50);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); //Black and opaque
-	glutDisplayFunc(Clear);
+	glClearColor(default_clear_color.red,   \
+				 default_clear_color.green, \
+				 default_clear_color.blue,  \
+				 default_clear_color.alpha);
+	glutDisplayFunc(ClearWindow);
+	UpdateWindow();
 }
 
-void Clear(void)
+void ClearWindow(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	glFlush();
 }
 
 void Draw(struct pixel p[], int size)
 {
-	//Clear screen
-	glClear(GL_COLOR_BUFFER_BIT);
-	//Draw the list
 	glBegin(GL_POINTS);
-		glColor3f(1.0f, 1.0f, 1.0f); //White
 		int i;
 		for (i = 0; i < size; i++)
 		{
-			//Convert to OpenGL coords and draw
+			//Set colour
+			/*glColor3f(p[i].color_of_pixel.red,   \
+					  p[i].color_of_pixel.green, \
+					  p[i].color_of_pixel.blue);*/
+			glColor3f(1.0f, 1.0f, 1.0f); //Defult white
+			
+			//Convert to OpenGL coordinates
 			float x = -1.0f + ((float)p[i].xpos * 2) / (float)WINDOW_W;
 			float y = -1.0f + ((float)p[i].ypos * 2) / (float)WINDOW_H;
+			
+			//Draw
 			glVertex2f(x, y);
 		}
 	glEnd();
+}
+
+void UpdateWindow(void)
+{
 	glFlush();
 }
