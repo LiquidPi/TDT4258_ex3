@@ -1,9 +1,6 @@
 #ifndef GWINT_H_   
 #define GWINT_H_
 
-const int WINDOW_W; //Width of window
-const int WINDOW_H; //Hight of window
-
 struct color
 {
 	float red;
@@ -20,14 +17,12 @@ struct pixel
 	/*struct color color_of_pixel;*/
 };
 
-
 /*  Setup of a OpenGL window, as a development screen. 
  *  Input:  int* argc:   Passed from int argc of int main
  *		    char** argv: Passed from char** argv of int main
- 			colour default_clear_colour: Sets the default colour used when clearing the window (function Clear).
  *  Output: none
  */
-void SetupOfWindow(int* argc, char** argv, struct color default_clear_color);
+void SetupOfWindow(int* argc, char** argv);
 
 /*  Clears the window, setting every pixel to default color defined in SetupOfWindow.
  *  Input:  none
@@ -41,6 +36,14 @@ void ClearWindow(void);
  *  Output: none
  */
 void Draw(struct pixel p[], int size);
+
+/*  Draws a singular pixel
+ *  Input:  int x:          The x coordinate of the pixel
+ *          int y:          The y coordinate of the pixel
+ *          uint32_t color: The color of the pixel
+ *  Output: none
+ */
+void DrawPixel(int x, int y, uint32_t color);
 
 /*  Updates the window, applying any changes made by Draw and ClearWindow.
  *  Input:  none
