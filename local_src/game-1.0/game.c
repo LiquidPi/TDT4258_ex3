@@ -6,9 +6,11 @@
 
 #include "gwint.h"
 
-int main(int argc, char** argv) {
-
-	Setup(&argc, argv);
+//Function for debugging the gwint module
+void dbg_gwint(int argc, char** argv)
+{
+	struct color background_color = {0.0f, 0.0f, 0.0f, 1.0f};
+	SetupOfWindow(&argc, argv, background_color);
 	
 	struct pixel box[] = {
 		{3,3},
@@ -19,11 +21,50 @@ int main(int argc, char** argv) {
 		{3,5},
 		{4,5},
 		{5,5}};
+	struct pixel box2[] = {
+		{13,13},
+		{14,13},
+		{15,13},
+		{13,14},
+		{15,14},
+		{13,15},
+		{14,15},
+		{15,15}};	
+	struct pixel box3[] = {
+		{23,23},
+		{24,23},
+		{25,23},
+		{23,24},
+		{25,24},
+		{23,25},
+		{24,25},
+		{25,25}};
+		
 	int size = 8;
-	Draw(box, size);
+	while(1)
+	{
+		Draw(box, size);
+		UpdateWindow();
+		sleep(1);
+		Draw(box2, size);
+		UpdateWindow();
+		sleep(1);
+		Draw(box3, size);
+		UpdateWindow();
+		sleep(1);
+		ClearWindow();
+		UpdateWindow();
+		sleep(1);
+	}
+}
+
+
+int main(int argc, char** argv) {
+	dbg_gwint(argc, argv);
 	while(1)
 	{
 		//nothing
 	}
     return 0;
 }
+
