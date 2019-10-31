@@ -6,12 +6,10 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/platform_device.h> // for platform driver
+#include <linux/ioport.h>// defines the interface of request_mem_region function
 
 
 
-	struct resource *res = platform_get_resource(dev , IORESOURCE_MEM, index);//returns the register base address
-	
-	int irq = platform_get_irq(dev , index);// returns the number of interrupt lines
 	
 
 
@@ -32,14 +30,80 @@ static int my_probe (struct platform_device *dev)
 		Timer  = platform_get_resource(dev, IORESOURCE_MEM, 1)
 		DAC    = platform_get_resource(dev, IORESOURCE_MEM, 2)
 
-		/*map the virtual address into the phu=ysical address(it isn't needed here but it's a good practice)*/
-		GPIO = ioremap_nocache(GPIO->start, resource_size(GPIO));
-		Timer = ioremap_nocache(Timer->start, resource_size(Timer));
-		DAC = ioremap_nocache(DAC->start, resource_size(DAC));
+		/*get the IRQ numbers*/
+		GPIO_IRQ = platform_get_irq (dev,0); 
+		DAC_IRQ = platform_get_irq (dev,4); 
+		Timer_IRQ = platform_get_irq (dev,2); 
 		
+		/*requesting access to the I/O pins by allocating the corresponding memory region, it will return NULL if the I/O aren't available 
+		*request_mem_region() will return NULL if the I/O isn't available
+		*GPIO.start : is the first argument which is the starting address for the allocated memory
+		*resource_size():returns the length of the memory needed by the I/O whcih is the second arrgument
+		*dev -> name : is the third arrgument which is the name of the driver
+		*/
+		
+		
+		
+		if(request_mem_region(GPIO->start,resource_size(GPIO), dev ->name)){
+			/*This remaps the pyhiscal address into a virtual address*/
+			unsigned long VA_GPIO = ioremap_nocache(GPIO->start, resource_size(GPIO))
+		
+		
+		/*Test: turn on the LEDS 14,13 and 12*/
+		*VA_GPIO = 2;
+		*(VA_GPIO + 0x08) = 0x05550000; // PA_MODEH: this sets only PA14, PA13 and PA12 as outputs since the rest are being used by the OS
+		*(VA_GPIO + 0x0c) = 0x7000; // PA_DOUT: setting the bits 14, 13 and 12 high
+		
+		/*end of the test*/
+		
+		
+
+
+		
+		
+		
+		
+		
+		
+		
+		/*release the allocated memory region after it has been used*/
+		release_mem_region(GPIO->start,resource_size(GPIO));
+		}
+
+
+
 
 		return 0;
 }
+
+/*user progtam opens the driver */
+static int mu_open (struct inode *inode, struct file *filp);
+
+/*user progtam closes the driver */
+static int mu_release (struct inode *inode, struct file *filp);
+
+/*user progtam reads from the driver */
+static ssize_t my_read (struct inode *flip, char __user *buff, size_t count, loff_t *offp);
+
+/*user progtam writes to the driver */
+static ssize_t my_write (struct inode *flip, char __user *buff, size_t count, loff_t *offp);
+
+
+static struct file_operations my_fops = {
+	.owner = THIS_MODULE,
+	.read = my_read,
+	.write = my_write,
+	.opem = my_open,
+	.release = my_release
+};
+
+
+/*it was mentioned in the compendium that a cdev struct needs to be allocated and intialized*/
+struct cdex my_cdev;
+
+cdev_init (&my_cdev, &my_fops);
+
+
 
 /*
  * my_remove - function to be called when the driver is being deactivated 
