@@ -11,7 +11,35 @@
 
 #define DRIVER_NAME "gamepad"
 
-dev_t device_number;
+
+
+
+static const struct of_device_id my_of_match[] = {
+		{	.compatible = "tdt4258",	},
+		{	},
+};
+MODULE_DEVICE_TABLE(of,	my_of_match);
+
+/* This struct define my_driver which is what the __int will register when the driver is loaded to the kernel
+*
+*/
+static struct platform_driver my_driver = {
+		.probe	=	my_probe,
+		.remove	=	my_remove,
+		.driver	=	{
+					.name	=	"my",
+					.owner	=	THIS_MODULE,
+					.of_match_table	=	my_of_match,
+		},
+};
+
+
+
+
+
+
+
+
 
 
 
@@ -80,8 +108,51 @@ static int my_probe (struct platform_device *dev)
 		GPIO_IRQ = platform_get_irq (dev,0);
 		DAC_IRQ = platform_get_irq (dev,4);
 		Timer_IRQ = platform_get_irq (dev,2);
+		
+		
+		dev_t device_number;	//device number
+		
+		static struct file_operations my_fops = {
+			.owner = THIS_MODULE,
+			.read = my_read,
+			.write = my_write,
+			.open = my_open,
+			.release = my_release
+		};
 
-		int ret;
+
+		/*it was mentioned in the compendium that a cdev struct needs to be allocated and intialized
+		* propably will have to add extra stuff to this struct
+		*/
+		struct cdex my_cdev;
+		struct class *cl; // creating a class struct
+		
+		cl = class create (THIS_MODULE,"my"); //this function is necessery to make the driver visiable for user space
+
+		/*allocation of device number*/
+
+		if(alloc_chrdev_region(&device_number, 0, 1, dev->name)<0){
+			printk(KERN_ALERT"Unable to access the I/O-port C memory region.\n");
+			return -1;
+		}
+
+
+		cdev_init (&my_cdev, &my_fops);
+		/* passing the cd structure to the kernel
+		* number 1 represent the number of devices
+		*/
+		cdev_add (&my_cdev,device_number,1);
+		
+		device_create (cl,NULL,device_number,NULL,"my");//this function is necessery to make the driver visiable for user space
+
+
+
+
+
+
+
+
+
 
 
 // Exercise 2 equivalent
@@ -134,16 +205,6 @@ static int my_probe (struct platform_device *dev)
 
 
 
-
-
-
-
-
-
-
-
-		/*release the allocated memory region after it has been used*/
-		release_mem_region(GPIO->start,resource_size(GPIO));
 		}
 
 
@@ -151,6 +212,8 @@ static int my_probe (struct platform_device *dev)
 
 		return 0;
 }
+
+
 
 /*user progtam opens the driver */
 static int mu_open (struct inode *inode, struct file *filp);
@@ -163,21 +226,6 @@ static ssize_t my_read (struct inode *flip, char __user *buff, size_t count, lof
 
 /*user progtam writes to the driver */
 static ssize_t my_write (struct inode *flip, char __user *buff, size_t count, loff_t *offp);
-
-
-static struct file_operations my_fops = {
-	.owner = THIS_MODULE,
-	.read = my_read,
-	.write = my_write,
-	.opem = my_open,
-	.release = my_release
-};
-
-
-/*it was mentioned in the compendium that a cdev struct needs to be allocated and intialized*/
-struct cdex my_cdev;
-
-cdev_init (&my_cdev, &my_fops);
 
 
 
