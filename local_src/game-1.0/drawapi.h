@@ -2,12 +2,16 @@
 #include "gwint.h"
 
 #ifdef linux
+
 #define COLORTYPE uint32_t
 #define COLOR(r, g, b) (r << 16 | (g << 8) | (b << ) )
 #define SETPIXEL(x, y, color) DrawPixel(x, y, color)
 #define INIT_DRAWING(argc, argv) SetupOfWindow(argc, argv)
+
 #else
+
 #error Only linux builds are supported
+
 #endif
 
 

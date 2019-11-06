@@ -11,7 +11,7 @@ CPPFLAGS +=
 LDFLAGS +=
 
 game: game.c gwint.c drawapi.c
-	gcc $^ -l GL -l glut -o $@
+	gcc $^ -l GL -l glut -lm -o $@
 
 all: game
 
