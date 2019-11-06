@@ -19,16 +19,16 @@ struct gamepad GetCurrentInput (void)
 		int c = getch();
 		switch (c) {
 			case 'w':
-				gamepad_instance.up_1 = true;
+				gamepad_instance.up_0 = true;
 				break;
 			case 's':
-				gamepad_instance.down_1 = true;
+				gamepad_instance.down_0 = true;
 				break;
 			case KEY_UP:
-				gamepad_instance.up_2 = true;
+				gamepad_instance.up_1 = true;
 				break;
 			case KEY_DOWN:
-				gamepad_instance.down_2 = true;
+				gamepad_instance.down_1 = true;
 				break;
 			case 'e':
 				gamepad_instance.start = true;

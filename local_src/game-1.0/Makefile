@@ -10,8 +10,8 @@ CFLAGS += -O2 -g -Wall -Dlinux #-Wsign-compare -Wfloat-equal -Wformat-security #
 CPPFLAGS +=
 LDFLAGS +=
 
-game: game.c gwint.c drawapi.c
-	gcc $^ -l GL -l glut -lm -o $@
+game: game.c gwint.c drawapi.c control_interface_dev.c
+	gcc $^ -l GL -l glut -lncurses -lm -o $@
 
 all: game
 

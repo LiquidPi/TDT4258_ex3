@@ -8,6 +8,9 @@
 #include <stdlib.h>
 
 #include "drawapi.h"
+#ifdef linux
+#include "control_interface_dev.h"
+#endif
 
 #define PADDLE_START 0
 #define PADDLE_HEIGHT 100
@@ -17,6 +20,9 @@
 #define PADDLE_1_BORDER WINDOW_W-10-30
 
 #define BALL_SIZE 20
+
+#define PADDLE_STEP 2
+#define BALL_SPEED 2.0f
 
 //Parameters for rendering score
 #define MAX_SCORE 5
@@ -100,17 +106,29 @@ void normalizeBallDirection() {
 void paddleCollide(float paddlePos) {
 	ballDirection[0] = -ballDirection[0];
 	float dist = paddlePos-(bally-((float)BALL_SIZE/2.0f));
-	ballDirection[1] = dist/100.0f;
+	ballDirection[1] = dist/-100.0f;
 	//normalizeBallDirection();
 }
 
 void updateGameState() {
-	movePaddle(0, 1);
+	struct gamepad g = GetCurrentInput();
+	if(g.up_0) {
+		movePaddle(0, PADDLE_STEP);
+	}
+	if(g.down_0) {
+		movePaddle(0, -PADDLE_STEP);
+	}
+	if(g.up_1) {
+		movePaddle(1, PADDLE_STEP);
+	}
+	if(g.down_1) {
+		movePaddle(1, -PADDLE_STEP);
+	}
 	//movePaddle(1, -1);
 
 	//Update ball position
-	ballx += ballDirection[0];
-	bally += ballDirection[1];
+	ballx += ballDirection[0]*BALL_SPEED;
+	bally += ballDirection[1]*BALL_SPEED;
 
 	//X collisions
 	if(ballx <= PADDLE_0_BORDER) {
@@ -139,6 +157,7 @@ void updateGameState() {
 }
 
 void resetGame() {
+	gameOver = 0;
 	scores[0] = 0;
 	scores[1] = 0;
 
@@ -170,6 +189,10 @@ int main(int argc, char** argv) {
 				drawLeftPaddle();
 			} else {
 				drawRightPaddle();
+			}
+			struct gamepad g = GetCurrentInput();
+			if(g.start) {
+				resetGame();
 			}
 		}
 		drawScore();

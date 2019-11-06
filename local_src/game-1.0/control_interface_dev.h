@@ -4,10 +4,10 @@
 #include <stdbool.h>
 
 struct gamepad {
+	bool up_0;
+	bool down_0;
 	bool up_1;
 	bool down_1;
-	bool up_2;
-	bool down_2;
 	bool start;
 };
 
