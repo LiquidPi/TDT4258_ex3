@@ -1,6 +1,12 @@
 #ifndef FRAMEBUFFER_INTERFACE_
 #define FRAMEBUFFER_INTERFACE_
 
+#define SCREEN_WIDTH 320
+#define SCREEN_HEIGHT 240
+#define BYTES_PER_PIXEL 2
+#define COLOR_WHITE 0xFF //Check this value!
+
+
 /*  Initialization of module
  *  Input:  none
  *  Output: none
@@ -22,10 +28,10 @@ void DrawPixel(int x, int y);
  */
 void ClearScreen(void);
 
-/*  Calls to framebuffer to process any changes made to the screen.
+/*  Termination of module (clean exit).
  *  Input:  none
  *  Output: none
  */
-void UpdateScreen(void);
+void TerminateInterface(void);
 
 #endif
