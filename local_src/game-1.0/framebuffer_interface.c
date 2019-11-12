@@ -48,16 +48,23 @@ int Initialize(void)
 	return 0;
 }
 
-void DrawPixel(int x, int y)
+void SetPixel(int x, int y)
 {
 	memory_map[getOffset(x,y)] = WHITE;
 }
 
-void DrawPixels(int x[], int y[], int size)
+void SetPixels(int x[], int y[], int size)
 {
 	int i;
 	for (i = 0; i < size; i++)
 		memory_map[getOffset(x,y)] = WHITE;
+}
+
+void ClearScreen(void)
+{
+	int i;
+	for (i = 0; i < (TOTAL_BYTES / BYTES_PER_PIXEL); i++)
+		memory_map[i] = BLACK;
 }
 
 void Refresh(void)

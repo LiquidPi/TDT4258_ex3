@@ -4,6 +4,7 @@
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 #define TOTAL_BYTES 153600
+#define BYTES_PER_PIXEL 2
 
 #define WHITE 0xFFFF
 #define BLACK 0x0000
@@ -20,7 +21,7 @@ int Initialize(void);
  			int y: y-coordinate
  *  Output: none
  */
-void DrawPixel(int x, int y);
+void SetPixel(int x, int y);
 
 /*  Draws pixels from array to screen
  *  Input:  int x[]: array of x-coordinate
@@ -28,10 +29,16 @@ void DrawPixel(int x, int y);
  			int size: size of both arrays
  *  Output: none
  */
-void DrawPixels(int x[], int y[], int size);
+void SetPixels(int x[], int y[], int size);
+
+/*  Clears the whole screen to default background color (black).
+ *  Input:  none
+ *  Output: none
+ */
+void ClearScreen(void);
 
 /*  Signal the framebuffer to update screen contents
- *  Note: called after every "draw" action.
+ *  Note: should be called after every "draw" or "clear" action.
  *  Input:  none
  *  Output: none
  */

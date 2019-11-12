@@ -18,3 +18,4 @@ Using 'framebuffer_interface.c' :
 	+ When closing application, call "Destroy" to unmap memory and close files.
 	+ Use coordinates x{0,320} and y{0,240}, with origo in the bottom-left corner.
 	+ The current default color is white.
+	+ Use "ClearScreen" to set every pixel to default background color (black)
