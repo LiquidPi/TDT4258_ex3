@@ -221,7 +221,8 @@ static int my_release (struct inode *inode, struct file *filp){
 /*user progtam reads from the driver */
 static ssize_t my_read (struct inode *flip, char __user *buff, size_t count, loff_t *offp) {
 	uint32_t data = ioread32(GPIO_PC_DIN);
-  copy_to_user(buff, &data, 1);
+	/* copy_to_user (to Destination address, in user space buffer, from Source address, in kernel space data, n number of bytes to copy) */
+	copy_to_user(buff, &data, 1);
 	return (ssize_t)1;
 }
 
