@@ -54,8 +54,6 @@ static struct platform_driver my_driver = {
 /* a function to obtain one or more device numbers to work with for setting up the char device time
 	the major number identifies the driver associated with the device.
 	The minor number is used by the kernel to determine exactly which device is being referred to.
-
-
 */
 
 static int register_chr_dev(void)
@@ -98,7 +96,7 @@ static int my_probe (struct platform_device *dev)
 		GPIO   = platform_get_resource(dev, IORESOURCE_MEM, 0)
 		Timer  = platform_get_resource(dev, IORESOURCE_MEM, 1)
 		DAC    = platform_get_resource(dev, IORESOURCE_MEM, 2)
-		
+
 		/*virtual memory base addresses */
 		unsigned long VA_GPIO = ioremap_nocache(GPIO->start, resource_size(GPIO))
 		unsigned long VA_Timer = ioremap_nocache(Timer->start, resource_size(Timer))
@@ -108,10 +106,10 @@ static int my_probe (struct platform_device *dev)
 		GPIO_IRQ = platform_get_irq (dev,0);
 		DAC_IRQ = platform_get_irq (dev,4);
 		Timer_IRQ = platform_get_irq (dev,2);
-		
-		
+
+
 		dev_t device_number;	//device number
-		
+
 		static struct file_operations my_fops = {
 			.owner = THIS_MODULE,
 			.read = my_read,
@@ -126,7 +124,7 @@ static int my_probe (struct platform_device *dev)
 		*/
 		struct cdex my_cdev;
 		struct class *cl; // creating a class struct
-		
+
 		cl = class create (THIS_MODULE,"my"); //this function is necessery to make the driver visiable for user space
 
 		/*allocation of device number*/
@@ -142,18 +140,8 @@ static int my_probe (struct platform_device *dev)
 		* number 1 represent the number of devices
 		*/
 		cdev_add (&my_cdev,device_number,1);
-		
+
 		device_create (cl,NULL,device_number,NULL,"my");//this function is necessery to make the driver visiable for user space
-
-
-
-
-
-
-
-
-
-
 
 // Exercise 2 equivalent
 		int long unsigned current_value;
@@ -203,26 +191,39 @@ static int my_probe (struct platform_device *dev)
 
 		/*end of the test*/
 
-
-
-		}
-
-
-
-
 		return 0;
+
 }
 
 
 
 /*user progtam opens the driver */
-static int mu_open (struct inode *inode, struct file *filp);
+static int my_open (struct inode *inode, struct file *filp) {
+
+}
 
 /*user progtam closes the driver */
-static int mu_release (struct inode *inode, struct file *filp);
+static int my_release (struct inode *inode, struct file *filp){
+	unsigned long n = 0x24;
+
+	//platform_device_release(struct device *dev)
+
+	// Release I/O port region
+	release_region(GPIO_PA_BASE ,n);
+	release_region(GPIO_PC_BASE ,n);
+	release_region(CMU_HFCORECLKEN0 ,0x4);
+	iowrite32(0x00, GPIO_IEN);
+	printk(KERN_INFO "my_release has been executed!");
+	return 0;
+
+}
 
 /*user progtam reads from the driver */
-static ssize_t my_read (struct inode *flip, char __user *buff, size_t count, loff_t *offp);
+static ssize_t my_read (struct inode *flip, char __user *buff, size_t count, loff_t *offp) {
+	uint32_t data = ioread32(GPIO_PC_DIN);
+  copy_to_user(buff, &data, 1);
+	return (ssize_t)1;
+}
 
 /*user progtam writes to the driver */
 static ssize_t my_write (struct inode *flip, char __user *buff, size_t count, loff_t *offp);
