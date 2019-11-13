@@ -60,16 +60,35 @@ void SetPixels(int x[], int y[], int size)
 		memory_map[getOffset(x,y)] = WHITE;
 }
 
-void ClearScreen(void)
+void ClearAll(void)
 {
 	int i;
 	for (i = 0; i < (TOTAL_BYTES / BYTES_PER_PIXEL); i++)
 		memory_map[i] = BLACK;
 }
 
-void Refresh(void)
+void ClearArea(int dx, int dy, int width, int height)
+{
+	int x, y;
+	for (x = dx; x < width; x++)
+		for (y = dy; y < height; y++)
+			memory_map[getOffset(x,y)] = BLACK;
+}
+
+void RefreshAll(void)
 {
 	ioctl(fbfd, 0x4680, &screen);
+}
+
+void RefreshArea(int dx, int dy, int width, int height)
+{
+	struct fb_copyarea area_to_refresh;
+	area_to_refresh.dx = dx;
+    area_to_refresh.dy = dy;
+    area_to_refresh.width = width;
+    area_to_refresh.height = height;
+    
+    ioctl(fbfd, 0x4680, &area_to_refresh);
 }
 
 int Destroy(void)

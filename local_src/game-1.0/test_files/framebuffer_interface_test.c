@@ -15,6 +15,8 @@ void PrintTestPattern (void)
 			SetPixel(x, y);
 		}
 	}
+
+	
 	
 	for (x = 0; x < 50; x++)
 	{
@@ -23,6 +25,7 @@ void PrintTestPattern (void)
 			SetPixel(x, y);
 		}
 	}
+
 	
 	for (x = 270; x < 320; x++)
 	{
@@ -31,6 +34,7 @@ void PrintTestPattern (void)
 			SetPixel(x, y);
 		}
 	}
+
 	
 	for (x = 0; x < 50; x++)
 	{
@@ -39,6 +43,7 @@ void PrintTestPattern (void)
 			SetPixel(x, y);
 		}
 	}
+
 	
 	for (x = 270; x < 320; x++)
 	{
@@ -47,6 +52,16 @@ void PrintTestPattern (void)
 			SetPixel(x, y);
 		}
 	}
+	
+}
+
+void RefreshTestArea(void)
+{
+	RefreshArea(135, 95, 50, 50);
+	RefreshArea(0, 0, 50, 50);
+	RefreshArea(270, 0, 50, 50);
+	RefreshArea(0, 190, 50, 50);
+	RefreshArea(270, 190, 50, 50);
 }
 
 void Test2 (void)
@@ -54,10 +69,10 @@ void Test2 (void)
 	while(1)
 	{
 		PrintTestPattern();
-		Refresh();
+		RefreshTestArea();
 		sleep(1);
-		ClearScreen();
-		Refresh();
+		ClearAll();
+		RefreshTestArea();
 		sleep(1);
 	}
 }
@@ -75,6 +90,4 @@ int main(int argc, char** argv) {
 	printf("Goodbye!\n");
     return 0;
 }
-
-
 
