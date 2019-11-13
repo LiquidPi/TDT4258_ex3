@@ -1,9 +1,14 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-int main(int argc, char *argv[])
+# include < fcntl .h >
+# include < stdio .h >
+int main ()
 {
-	printf("Hello World, I'm game!\n");
-
-	exit(EXIT_SUCCESS);
+char buffer [1];
+int fd ;
+fd = open ("/ dev / mydev " , O_RDWR );
+buffer [0]=0 x00 ;
+write ( fd , buffer ,1 , NULL );
+read ( fd , buffer ,1 , NULL );
+printf (" Value : 0 x %02 x \ n " , buffer [0]);
+close ( fd );
 }
+
