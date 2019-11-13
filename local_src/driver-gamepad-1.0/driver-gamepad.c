@@ -7,49 +7,29 @@
 #include <linux/init.h>
 #include <linux/platform_device.h> // for platform driver
 #include <linux/ioport.h>// defines the interface of request_mem_region function
+#include <linux/cdev.h>
+#include <linux/sched.h>
 
 
 #define DRIVER_NAME "gamepad"
 
+/*Inturrepit handling stuff*/
+//************************************************************//
 
-
-
-static const struct of_device_id my_of_match[] = {
-		{	.compatible = "tdt4258",	},
-		{	},
+int request_irq(unsigned int irq,
+   void (*handler)(int, void *, struct pt_regs *),
+   unsigned long flags, 
+   const char *dev_name,
+   void *dev_id){
+   
 };
-MODULE_DEVICE_TABLE(of,	my_of_match);
 
-/* This struct define my_driver which is what the __int will register when the driver is loaded to the kernel
-*
-*/
-static struct platform_driver my_driver = {
-		.probe	=	my_probe,
-		.remove	=	my_remove,
-		.driver	=	{
-					.name	=	"my",
-					.owner	=	THIS_MODULE,
-					.of_match_table	=	my_of_match,
-		},
+void free_irq(unsigned int irq, void *dev_id){
+
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//************************************************************//
 
 /* a function to obtain one or more device numbers to work with for setting up the char device time
 	the major number identifies the driver associated with the device.
@@ -122,7 +102,7 @@ static int my_probe (struct platform_device *dev)
 		/*it was mentioned in the compendium that a cdev struct needs to be allocated and intialized
 		* propably will have to add extra stuff to this struct
 		*/
-		struct cdex my_cdev;
+		struct cdev my_cdev;
 		struct class *cl; // creating a class struct
 
 		cl = class create (THIS_MODULE,"my"); //this function is necessery to make the driver visiable for user space
@@ -143,6 +123,7 @@ static int my_probe (struct platform_device *dev)
 
 		device_create (cl,NULL,device_number,NULL,"my");//this function is necessery to make the driver visiable for user space
 
+/*
 // Exercise 2 equivalent
 		int long unsigned current_value;
 		int long unsigned new_value;
@@ -173,7 +154,7 @@ static int my_probe (struct platform_device *dev)
 		current_value = ioread32(VA_GPIO + GPIO_IFC);
 		new_value = current_value | ioread32(VA_GPIO + GPIO_IF);
 		iowrite32(new_value, VA_GPIO + GPIO_IFC);
-
+*/
 
 		/*requesting access to the I/O pins by allocating the corresponding memory region, it will return NULL if the I/O aren't available
 		*request_mem_region() will return NULL if the I/O isn't available
@@ -182,23 +163,30 @@ static int my_probe (struct platform_device *dev)
 		*dev -> name : is the third arrgument which is the name of the driver
 		*/
 
-
-
-		/*Test: turn on the LEDS 14,13 and 12*/
-		*VA_GPIO = 2;
-		*(VA_GPIO + 0x08) = 0x05550000; // PA_MODEH: this sets only PA14, PA13 and PA12 as outputs since the rest are being used by the OS
-		*(VA_GPIO + 0x0c) = 0x7000; // PA_DOUT: setting the bits 14, 13 and 12 high
-
-		/*end of the test*/
-
 		return 0;
 
 }
 
 
+static irqreturn_t interrupt_handler (int irq, void *dev_id){
+
+
+
+}
+
 
 /*user progtam opens the driver */
 static int my_open (struct inode *inode, struct file *filp) {
+
+
+		int ret = request_irq ( GPIO_IRQ,interrupt_handler,SA_INTERRUPT, "short", NULL);
+		if (ret < 0){
+		printk (KERN_ALERT "%s: request_irg failed with %d\n",
+__func__, ret);
+		}
+		printk (" Device opened \ n ");
+		return 0;
+
 
 }
 
@@ -207,7 +195,10 @@ static int my_release (struct inode *inode, struct file *filp){
 	unsigned long n = 0x24;
 
 	//platform_device_release(struct device *dev)
-
+	free_irq(GPIO_IRQ,NULL);
+	printk (" Device closed \ n ");
+	return 0;
+	/*
 	// Release I/O port region
 	release_region(GPIO_PA_BASE ,n);
 	release_region(GPIO_PC_BASE ,n);
@@ -215,19 +206,26 @@ static int my_release (struct inode *inode, struct file *filp){
 	iowrite32(0x00, GPIO_IEN);
 	printk(KERN_INFO "my_release has been executed!");
 	return 0;
-
+	*/
 }
 
 /*user progtam reads from the driver */
 static ssize_t my_read (struct inode *flip, char __user *buff, size_t count, loff_t *offp) {
+	/*
 	uint32_t data = ioread32(GPIO_PC_DIN);
 	/* copy_to_user (to Destination address, in user space buffer, from Source address, in kernel space data, n number of bytes to copy) */
-	copy_to_user(buff, &data, 1);
-	return (ssize_t)1;
+	/*copy_to_user(buff, &data, 1);
+	return (ssize_t)1;*/
+	
+	printk (" Device is being read \ n ");
+	return 0;
 }
 
 /*user progtam writes to the driver */
-static ssize_t my_write (struct inode *flip, char __user *buff, size_t count, loff_t *offp);
+static ssize_t my_write (struct inode *flip, char __user *buff, size_t count, loff_t *offp){
+	printk (" Device can't be written to!!! \ n ");
+	return 0;
+};
 
 
 
