@@ -6,8 +6,8 @@
 #define TOTAL_BYTES 153600
 #define BYTES_PER_PIXEL 2
 
-#define WHITE 0xFFFF
-#define BLACK 0x0000
+#define WHITE 0xFFFF  // Default drawing color
+#define BLACK 0x0000  // Default background color
 
 
 /*  Opens framebuffer, maps it to memory
@@ -35,14 +35,31 @@ void SetPixels(int x[], int y[], int size);
  *  Input:  none
  *  Output: none
  */
-void ClearScreen(void);
+void ClearAll(void);
 
-/*  Signal the framebuffer to update screen contents
- *  Note: should be called after every "draw" or "clear" action.
+/*  Clears a limited area (rectangle) to default background color (black), defined by the parameters.
+ *  Input:  int dx: bottom-left corner position (x-coord)
+ 			int dy: bottom-left corner position (y-coord)
+ 			int width: width of the rectangle
+ 			int heigth: height of the rectangle
+ *  Output: none
+ */
+void ClearArea(int dx, int dy, int width, int height);
+
+/*  Signal the framebuffer to update the whole screen
  *  Input:  none
  *  Output: none
  */
-void Refresh(void);
+void RefreshAll(void);
+
+/*  Signal the framebuffer to update a limited area (rectangle), defined by the parameters.
+ *  Input:  int dx: bottom-left corner position (x-coord)
+ 			int dy: bottom-left corner position (y-coord)
+ 			int width: width of the rectangle
+ 			int heigth: height of the rectangle
+ *  Output: none
+ */
+void RefreshArea(int dx, int dy, int width, int height);
 
 /*  Dealocate memory and closes framebuffer
  *  Input:  none

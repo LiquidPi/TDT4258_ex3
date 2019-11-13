@@ -14,8 +14,10 @@ Using 'framebuffer_interface.c' :
 ----------------------------------
 	+ Call first "Initialize" to set up module
 	+ To draw to screen, call "DrawPixel" or "DrawPixels".
-	+ Apply changes (show on screen); call "Refresh" after drawing.
+	+ Apply changes (show on screen); call "RefreshAll" or "RefreshArea" after drawing.
 	+ When closing application, call "Destroy" to unmap memory and close files.
 	+ Use coordinates x{0,320} and y{0,240}, with origo in the bottom-left corner.
-	+ The current default color is white.
-	+ Use "ClearScreen" to set every pixel to default background color (black)
+	+ The current default drawing color is white; background color black
+	+ Use "ClearAll" to set every pixel to default background color.
+	+ Use "ClearArea" so set a defined rectangle to default background color.
+	+ For better preformance, use "RefreshArea" for areas of interest.
