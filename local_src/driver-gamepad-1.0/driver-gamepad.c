@@ -13,23 +13,6 @@
 
 #define DRIVER_NAME "gamepad"
 
-/*Inturrepit handling stuff*/
-//************************************************************//
-
-int request_irq(unsigned int irq,
-   void (*handler)(int, void *, struct pt_regs *),
-   unsigned long flags, 
-   const char *dev_name,
-   void *dev_id){
-   
-};
-
-void free_irq(unsigned int irq, void *dev_id){
-
-};
-
-
-//************************************************************//
 
 /* a function to obtain one or more device numbers to work with for setting up the char device time
 	the major number identifies the driver associated with the device.
