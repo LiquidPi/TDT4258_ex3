@@ -70,8 +70,8 @@ void ClearAll(void)
 void ClearArea(int dx, int dy, int width, int height)
 {
 	int x, y;
-	for (x = dx; x < width; x++)
-		for (y = dy; y < height; y++)
+	for (x = dx; x < width+dx; x++)
+		for (y = dy; y < height+dy; y++)
 			memory_map[getOffset(x,y)] = BLACK;
 }
 
