@@ -1,9 +1,15 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-int main(int argc, char *argv[])
+# include <fcntl.h>
+# include <stdio.h>
+int main ()
 {
-	printf("Hello World, I'm game!\n");
+char buffer;
+int fd ;
+fd = open ("/dev/gamepad" , O_RONLY );
+while(1){
 
-	exit(EXIT_SUCCESS);
+read ( fd , &buffer,1  );
+printf (" Value : %d \n " , buffer);
+
 }
+}
+

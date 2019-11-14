@@ -1,14 +1,15 @@
-# include < fcntl .h >
-# include < stdio .h >
+# include <fcntl.h>
+# include <stdio.h>
 int main ()
 {
-char buffer [1];
+char buffer;
 int fd ;
-fd = open ("/ dev / mydev " , O_RDWR );
-buffer [0]=0 x00 ;
-write ( fd , buffer ,1 , NULL );
-read ( fd , buffer ,1 , NULL );
-printf (" Value : 0 x %02 x \ n " , buffer [0]);
-close ( fd );
+fd = open ("/dev/gamepad" , O_RDONLY );
+while(1){
+
+read ( fd , &buffer,1  );
+printf (" Value : %d \n " , buffer);
+
+}
 }
 
