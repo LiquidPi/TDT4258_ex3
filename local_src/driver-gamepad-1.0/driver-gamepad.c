@@ -23,28 +23,45 @@
 
 		/*Variables decleration space*/
 		
-		struct resource *GPIO, *Timer, *DAC;
+		struct resource *GPIO, *Timer, *DAC, *memory;
 		int GPIO_IRQ, DAC_IRQ, Timer_IRQ;
 		unsigned long VA_GPIO, VA_Timer, VA_DAC ;
 		struct cdev my_cdev;
 		struct class *cl; // creating a class struct
 		dev_t device_number;	//device number
-		
+		struct fasync_struct *async_queue;
+
 		 long unsigned current_value;
 		 long unsigned new_value;
 		
 	
+	static int my_fasync(int fd, struct file *filp, int mode){
+    return fasync_helper(fd, filp, mode, &async_queue);
+}
+
+
+	static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs){
+    iowrite32(0xff, VA_GPIO + GPIO_IFC);
+    kill_fasync(&async_queue, SIGIO, POLL_IN);
+    return IRQ_HANDLED;
+}
+
+
+
 
 /*user progtam opens the driver */
 static int my_open (struct inode *inode, struct file *filp) {
-
+		
+		
+		memory = request_mem_region(GPIO-> start, resource_size(GPIO),"gamedriver_mem");
+		
 		// Set GPIO PC to input
 		new_value = 0x33333333;
-		iowrite32(new_value, VA_GPIO + GPIO_PC_MODEL);
+		iowrite32(new_value, GPIO_PC_MODEL);
 
 		// Enable internal pullup
 		new_value = 0xFF;
-		iowrite32(new_value, VA_GPIO + GPIO_PC_DOUT);
+		iowrite32(new_value, GPIO_PC_DOUT);
 		// Enable interrupts for GPIO C when its state changes
 		new_value = 0x22222222;
 		iowrite32(new_value, VA_GPIO + GPIO_EXTIPSELL);
@@ -59,19 +76,18 @@ static int my_open (struct inode *inode, struct file *filp) {
 		iowrite32(new_value, VA_GPIO + GPIO_IEN);
 
 		// Clear interrupt flags to avoid interrupt on startup
-		current_value = ioread32(VA_GPIO + GPIO_IFC);
+		/*current_value = ioread32(VA_GPIO + GPIO_IF);
 		new_value = current_value | ioread32(VA_GPIO + GPIO_IFC);
-		iowrite32(new_value, VA_GPIO + GPIO_IFC);
+		iowrite32(new_value, VA_GPIO + GPIO_IFC);*/
 		
-/*
-		int ret = request_irq ( GPIO_IRQ,interrupt_handler,SA_INTERRUPT, "short", NULL);
+
+		/*int ret = request_irq ( GPIO_IRQ,interrupt_handler,0, "short", NULL);
 		if (ret < 0){
 		printk (KERN_ALERT "%s: request_irg failed with %d\n",
 __func__, ret);
-		}
-		*/
+		}*/
+		
 		printk (" Device opened \n ");
-		printk(KERN_INFO "my_open has been executed!");
 		return 0;
 
 
@@ -99,12 +115,13 @@ static int my_release (struct inode *inode, struct file *filp){
 /*user progtam reads from the driver */
 static ssize_t my_read (struct inode *flip, char __user *buff, size_t count, loff_t *offp) {
 	
-	int8_t data = ~ioread8(VA_GPIO + GPIO_PC_DIN);
+	int8_t data = ~ioread8( GPIO_PC_DIN);
+
 	//copy_to_user (to Destination address, in user space buffer, from Source address, in kernel space data, n number of bytes to copy)
 	copy_to_user(buff, &data, 1);
 
 	
-	printk (" Device is being read %   \n ",data);
+	printk (" Device is being read %d, %x  \n ",data,buff);
 	return 0;
 }
 
@@ -214,16 +231,6 @@ static int my_probe (struct platform_device *dev)
 		return 0;
 
 }
-
-
-static irqreturn_t interrupt_handler (int irq, void *dev_id){
-
-	return 0;
-
-}
-
-
-
 
 /*
  * my_remove - function to be called when the driver is being deactivated
