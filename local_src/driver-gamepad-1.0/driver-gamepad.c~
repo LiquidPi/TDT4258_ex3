@@ -19,13 +19,14 @@
 
 
 
+#define GPIO_IF        0x114
 
 
 		/*Variables decleration space*/
 		
-		struct resource *GPIO, *Timer, *DAC, *memory;
-		int GPIO_IRQ, DAC_IRQ, Timer_IRQ;
-		unsigned long VA_GPIO, VA_Timer, VA_DAC ;
+		struct resource *GPIO,*memory;
+		int GPIO_IRQ;
+		unsigned long VA_GPIO ;
 		struct cdev my_cdev;
 		struct class *cl; // creating a class struct
 		dev_t device_number;	//device number
@@ -33,16 +34,22 @@
 
 		 long unsigned current_value;
 		 long unsigned new_value;
-		
+		 long unsigned status = 0;
 	
-	static int my_fasync(int fd, struct file *filp, int mode){
+/*	static int my_fasync(int fd, struct file *filp, int mode){
     return fasync_helper(fd, filp, mode, &async_queue);
-}
+}*/
 
 
 	static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs){
-    iowrite32(0xff, VA_GPIO + GPIO_IFC);
-    kill_fasync(&async_queue, SIGIO, POLL_IN);
+	
+	status = readw(VA_GPIO + GPIO_IF); // read interrupt source
+    writel(status, VA_GPIO + GPIO_IFC); // clear interrupt
+    
+    printk("interrupt!, %d \n", status);
+
+
+    //kill_fasync(&async_queue, SIGIO, POLL_IN);
     return IRQ_HANDLED;
 }
 
@@ -73,7 +80,7 @@ static int my_open (struct inode *inode, struct file *filp) {
 		// Set up interrupt generation
 		//current_value = ioread32(VA_GPIO + GPIO_IEN);
 		new_value = 0xFF; //current_value | 0xFF;
-		iowrite32(new_value, VA_GPIO + GPIO_PC_IEN);
+		iowrite32(new_value, VA_GPIO + GPIO_IEN);
 
 		// Clear interrupt flags to avoid interrupt on startup
 		/*current_value = ioread32(VA_GPIO + GPIO_IF);
@@ -81,11 +88,11 @@ static int my_open (struct inode *inode, struct file *filp) {
 		iowrite32(new_value, VA_GPIO + GPIO_IFC);*/
 		
 
-		/*int ret = request_irq ( GPIO_IRQ,interrupt_handler,0, "short", NULL);
+		int ret = request_irq ( GPIO_IRQ,interrupt_handler,0, "short", NULL);
 		if (ret < 0){
 		printk (KERN_ALERT "%s: request_irg failed with %d\n",
 __func__, ret);
-		}*/
+		}
 		
 		printk (" Device opened \n ");
 		return 0;
@@ -115,13 +122,13 @@ static int my_release (struct inode *inode, struct file *filp){
 /*user progtam reads from the driver */
 static ssize_t my_read (struct inode *flip, char __user *buff, size_t count, loff_t *offp) {
 	
-	int8_t data = ~ioread8( GPIO_PC_DIN);
+	int8_t data = ~ioread8(GPIO_PC_DIN);
 
 	//copy_to_user (to Destination address, in user space buffer, from Source address, in kernel space data, n number of bytes to copy)
 	copy_to_user(buff, &data, 1);
 
 	
-	printk (" Device is being read %d, %x  \n ",data,buff);
+	//printk (" Device is being read %d, %x  \n ",data,buff);
 	return 0;
 }
 
