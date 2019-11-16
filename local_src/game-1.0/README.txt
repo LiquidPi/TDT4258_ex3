@@ -10,6 +10,13 @@ Using 'control_interface_dev.c' :
 	+ Check 'control_interface_dev_test.c' for sample usage.
 	+ Compile with '-lncurses' flag in gcc.
 	
+Using 'control_interface.c' :
+--------------------------------
+	+ Similar to control_interface_dev
+	+ Must have the gamepad driver available ("/dev/gamepad").
+	+ InitialzeControl() before use, DestroyControl() after use.
+	+ To pool controllers, call GetCurrentInput().
+	
 Using 'framebuffer_interface.c' :
 ----------------------------------
 	+ Call first "Initialize" to set up module
