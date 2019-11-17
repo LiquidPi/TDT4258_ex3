@@ -22,7 +22,7 @@ int InitializeControl (void)
 		return -1;
 	}
 	//Map it to memory
-	gdmap = mmap(NULL, 1, PROT_READ | PROT_WRITE, MAP_SHARED, gd, 0);
+	gdmap = (char)mmap(NULL, 1, PROT_READ | PROT_WRITE, MAP_SHARED, gd, 0);
 	if ((int)gdmap == -1)
 	{
 		printf("Error, couldn't map memory from gamepad driver.\n");
@@ -35,11 +35,11 @@ int InitializeControl (void)
 struct gamepad GetCurrentInput (void)
 {
 	struct gamepad gamepad_instance = {
-		gdmap[0] && BUTTON_UP_0, 
-		gdmap[0] && BUTTON_DOWN_0, 
-		gdmap[0] && BUTTON_UP_1, 
-		gdmap[0] && BUTTON_DOWN_1, 
-		gdmap[0] && BUTTON_START
+		gdmap && BUTTON_UP_0, 
+		gdmap && BUTTON_DOWN_0, 
+		gdmap && BUTTON_UP_1, 
+		gdmap && BUTTON_DOWN_1, 
+		gdmap && BUTTON_START
 	};
 	
 	return gamepad_instance;
