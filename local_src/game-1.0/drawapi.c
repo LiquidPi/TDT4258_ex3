@@ -1,5 +1,5 @@
 #include "drawapi.h"
-
+#define NAIVE_BORDER 20
 int r = 0;
 int g = 0;
 int b = 0;
@@ -10,10 +10,10 @@ void drawRectangle(int x, int y, int width, int height) {
 			SETPIXEL(xp, yp);
 		}
 	}
-	int xb = x-20;
-	int yb = y-20;
-	int wb = width+20;
-	int hb = height+20;
+	int xb = x-NAIVE_BORDER;
+	int yb = y-NAIVE_BORDER;
+	int wb = width+NAIVE_BORDER*2;
+	int hb = height+NAIVE_BORDER*2;
 
 	if(xb < 0) {
 		xb = 0;
