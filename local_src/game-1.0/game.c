@@ -210,7 +210,7 @@ int main(int argc, char** argv) {
 		}
 		drawScore();
 
-		DIRTY(xb, yb, wb, hb);
+		DIRTY(0, 0, WINDOW_W, WINDOW_H);
 
 		//UpdateWindow();
 		//usleep(1000*16);
