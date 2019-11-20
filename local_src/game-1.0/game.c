@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h> //For sleep function; debug
-#include <math.h>
 #include <time.h>
 #include <stdlib.h>
 
@@ -41,6 +40,21 @@ char gameOver = 0;
 int count = 0;
 
 int paddles[] = {WINDOW_H/2-50, WINDOW_H/2-50};
+
+//Sqrt function as we werent allowed to link with the math library
+float sqrt(float num)
+{
+    float guess, e, upperbound;
+    guess = 1;
+    e = 0.001;
+    do 
+    {
+        upperbound = num / guess;
+        guess = (upperbound + guess) / 2;
+    } while (!(guess * guess >= num - e && 
+               guess * guess <= num + e));
+    return guess;
+}
 
 //Draw game components
 void drawPaddle(int x, int y) {
