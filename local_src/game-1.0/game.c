@@ -187,7 +187,7 @@ int main(int argc, char** argv) {
 	ClearAll();
 	RefreshAll();
 
-	InitializeControl();
+	//InitializeControl();
 	while(1)
 	{
 		ClearAll();

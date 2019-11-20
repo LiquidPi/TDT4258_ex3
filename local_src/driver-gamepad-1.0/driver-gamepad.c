@@ -41,26 +41,27 @@
 }*/
 
 
-	static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs){
+
+//	static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs){
 	
 	
 	
 	/*store the button status*/
-	status = ~ioread8(GPIO_PC_DIN); // read interrupt source
+	//status = ~ioread8(GPIO_PC_DIN); // read interrupt source
 	
     //writel(status, VA_GPIO + GPIO_IFC); // clear interrupt
     
-    printk("interrupt!, %d \n", status);
+    //printk("interrupt!, %d \n", status);
 
 
 	/*clear the interrupt*/
-	current_value = ioread32(GPIO_IFC);
-	new_value = current_value | ioread32(VA_GPIO + GPIO_IF);
-	iowrite32 (new_value, GPIO_IFC);
+	//current_value = ioread32(GPIO_IFC);
+	//new_value = current_value | ioread32(VA_GPIO + GPIO_IF);
+	//iowrite32 (new_value, GPIO_IFC);
 	
     //kill_fasync(&async_queue, SIGIO, POLL_IN);
-    return IRQ_HANDLED;
-}
+    //return IRQ_HANDLED;
+//}
 
 
 
@@ -99,7 +100,7 @@ static int my_open (struct inode *inode, struct file *filp) {
 		iowrite32(new_value, VA_GPIO + GPIO_IFC);*/
 		
 
-		int ret_even = request_irq ( GPIO_IRQ_even,interrupt_handler,0, "gamepad", &my_cdev);
+	/*	int ret_even = request_irq ( GPIO_IRQ_even,interrupt_handler,0, "gamepad", &my_cdev);
 		if (ret_even < 0){
 		printk (KERN_ALERT "%s: request_irg failed with %d\n",
 __func__, ret_even);
@@ -109,8 +110,8 @@ __func__, ret_even);
 		if (ret_odd < 0){
 		printk (KERN_ALERT "%s: request_irg failed with %d\n",
 __func__, ret_odd);
-		}
-		printk (" Device opened \n ");
+		}*/
+		//printk (" Device opened \n ");
 		return 0;
 
 
@@ -122,7 +123,7 @@ static int my_release (struct inode *inode, struct file *filp){
 
 	//platform_device_release(struct device *dev)
 	//free_irq(GPIO_IRQ,NULL);               causing an error, should be fixedd
-	printk (" Device closed \n ");
+	//printk (" Device closed \n ");
 	return 0;
 	/*
 	// Release I/O port region
@@ -138,13 +139,13 @@ static int my_release (struct inode *inode, struct file *filp){
 /*user progtam reads from the driver */
 static ssize_t my_read (struct inode *flip, char __user *buff, size_t count, loff_t *offp) {
 	
-	//int8_t data = ~ioread8(GPIO_PC_DIN);
+	int8_t data = ~ioread8(GPIO_PC_DIN);
 
 	//copy_to_user (to Destination address, in user space buffer, from Source address, in kernel space data, n number of bytes to copy)
-	copy_to_user(buff, &status, 1);
+	copy_to_user(buff, &data, 1);
 
 	
-	printk (" Device is being read %d, %d  \n ",status,buff);
+	//printk (" Device is being read %d  \n ",buff);
 	return 0;
 }
 
