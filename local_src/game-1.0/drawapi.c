@@ -28,7 +28,7 @@ void drawRectangle(int x, int y, int width, int height) {
 		hb = WINDOW_H-yb;
 	}
 
-	DIRTY(xb, yb, wb, hb);
+	
 }
 void drawLine(int x1, int y1, int x2, int y2) {
 	//Do nothing for now
