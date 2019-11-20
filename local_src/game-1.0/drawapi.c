@@ -4,8 +4,9 @@ int r = 0;
 int g = 0;
 int b = 0;
 void drawRectangle(int x, int y, int width, int height) {
-	for(int yp = y; yp < height+y; yp++) {
-		for(int xp = x; xp < width+x; xp++) {
+	int yp, xp;
+	for(yp = y; yp < height+y; yp++) {
+		for(xp = x; xp < width+x; xp++) {
 			SETPIXEL(xp, yp);
 		}
 	}

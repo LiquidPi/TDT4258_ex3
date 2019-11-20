@@ -9,9 +9,7 @@
 
 #include "drawapi.h"
 
-#ifdef linux
 #include "control_interface.h"
-#endif
 
 #define PADDLE_START 0
 #define PADDLE_HEIGHT 100
@@ -188,8 +186,12 @@ void resetGame() {
 
 int main(int argc, char** argv) {
 	srand(time(NULL));
-	setbuf(stdout, NULL);
 	INIT_DRAWING();
+
+	ClearAll();
+	RefreshAll();
+
+	InitializeControl();
 	while(1)
 	{
 		ClearAll();
