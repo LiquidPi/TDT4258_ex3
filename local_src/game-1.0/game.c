@@ -10,7 +10,7 @@
 #include "drawapi.h"
 
 #ifdef linux
-#include "control_interface_dev.h"
+#include "control_interface.h"
 #endif
 
 #define PADDLE_START 0
@@ -45,7 +45,6 @@ int count = 0;
 int paddles[] = {WINDOW_H/2-50, WINDOW_H/2-50};
 
 //Draw game components
-
 void drawPaddle(int x, int y) {
 	drawRectangle(x, y, 15, 100);
 }
@@ -98,8 +97,26 @@ void someoneWon(int winner) {
 	ballDirection[1] = (float)(rand()%100)/100.0f-0.5f;
 }
 
+//Fast sqrt from doom, so we don't have to include any more libraries(Make was mean)
+float Q_rsqrt( float number )
+{
+	long i;
+	float x2, y;
+	const float threehalfs = 1.5F;
+
+	x2 = number * 0.5F;
+	y  = number;
+	i  = * ( long * ) &y;                       // evil floating point bit level hacking
+	i  = 0x5f3759df - ( i >> 1 );               // what the fuck? 
+	y  = * ( float * ) &i;
+	y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
+//	y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
+
+	return y;
+}
+
 void normalizeBallDirection() {
-	float normalizedScalar = sqrt(ballDirection[0]*ballDirection[0]+ballDirection[1]*ballDirection[1]);
+	float normalizedScalar = Q_rsqrt(ballDirection[0]*ballDirection[0]+ballDirection[1]*ballDirection[1]);
 	ballDirection[0] /= normalizedScalar;
 	ballDirection[1] /= normalizedScalar;
 }
@@ -172,13 +189,10 @@ void resetGame() {
 int main(int argc, char** argv) {
 	srand(time(NULL));
 	setbuf(stdout, NULL);
-	printf("Hello, world");
-	printf("gwinit\n");
-	INIT_DRAWING(&argc, argv);
-	printf("Drawing loop\n");
+	INIT_DRAWING();
 	while(1)
 	{
-		ClearWindow();
+		ClearAll();
 		if(!gameOver) {
 			updateGameState();
 
@@ -199,7 +213,7 @@ int main(int argc, char** argv) {
 		drawScore();
 
 
-		UpdateWindow();
+		//UpdateWindow();
 		usleep(1000*16);
 		if(count > 100) {
 			count = 0;

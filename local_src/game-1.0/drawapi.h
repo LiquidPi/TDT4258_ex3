@@ -1,16 +1,18 @@
 #include <stdint.h>
+
+#ifdef linux_build
+
 #include "gwint.h"
-
-#ifdef linux
-
 #define COLORTYPE uint32_t
 #define COLOR(r, g, b) (r << 16 | (g << 8) | (b << ) )
 #define SETPIXEL(x, y, color) DrawPixel(x, y, color)
-#define INIT_DRAWING(argc, argv) SetupOfWindow(argc, argv)
 
 #else
 
-#error Only linux builds are supported
+#include "framebuffer_interface.h"
+#define SETPIXEL(x, y) SetPixel(x, y)
+#define INIT_DRAWING() Initialize()
+#define DIRTY(x, y, w, h) RefreshArea(x, y, w, h);
 
 #endif
 
