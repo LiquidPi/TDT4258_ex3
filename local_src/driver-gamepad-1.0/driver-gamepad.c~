@@ -25,7 +25,7 @@
 		/*Variables decleration space*/
 		
 		struct resource *GPIO,*memory;
-		int GPIO_IRQ;
+		int GPIO_IRQ_even, GPIO_IRQ_odd;
 		unsigned long VA_GPIO ;
 		struct cdev my_cdev;
 		struct class *cl; // creating a class struct
@@ -43,12 +43,21 @@
 
 	static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs){
 	
-	status = readw(VA_GPIO + GPIO_IF); // read interrupt source
-    writel(status, VA_GPIO + GPIO_IFC); // clear interrupt
+	
+	
+	/*store the button status*/
+	status = ioread8(GPIO_PC_DIN); // read interrupt source
+	
+    //writel(status, VA_GPIO + GPIO_IFC); // clear interrupt
     
     printk("interrupt!, %d \n", status);
 
 
+	/*clear the interrupt*/
+	current_value = ioread32(GPIO_IFC);
+	new_value = current_value | ioread32(VA_GPIO + GPIO_IF);
+	iowrite32 (new_value, GPIO_IFC);
+	
     //kill_fasync(&async_queue, SIGIO, POLL_IN);
     return IRQ_HANDLED;
 }
@@ -62,25 +71,27 @@ static int my_open (struct inode *inode, struct file *filp) {
 		
 		memory = request_mem_region(GPIO-> start, resource_size(GPIO),"gamedriver_mem");
 		
+		
 		// Set GPIO PC to input
 		new_value = 0x33333333;
 		iowrite32(new_value, GPIO_PC_MODEL);
 
+		
 		// Enable internal pullup
 		new_value = 0xFF;
 		iowrite32(new_value, GPIO_PC_DOUT);
 		// Enable interrupts for GPIO C when its state changes
 		new_value = 0x22222222;
-		iowrite32(new_value, VA_GPIO + GPIO_EXTIPSELL);
+		iowrite32(new_value, GPIO_EXTIPSELL);
 
 		// Set up the GPIO to interrupt when a bit changes from 1 to 0 (button pressed)
 		new_value = 0xFF;
-		iowrite32(new_value, VA_GPIO + GPIO_EXTIFALL);
+		iowrite32(new_value,  GPIO_EXTIFALL);
 
 		// Set up interrupt generation
 		//current_value = ioread32(VA_GPIO + GPIO_IEN);
 		new_value = 0xFF; //current_value | 0xFF;
-		iowrite32(new_value, VA_GPIO + GPIO_IEN);
+		iowrite32(new_value,  GPIO_IEN);
 
 		// Clear interrupt flags to avoid interrupt on startup
 		/*current_value = ioread32(VA_GPIO + GPIO_IF);
@@ -88,12 +99,17 @@ static int my_open (struct inode *inode, struct file *filp) {
 		iowrite32(new_value, VA_GPIO + GPIO_IFC);*/
 		
 
-		int ret = request_irq ( GPIO_IRQ,interrupt_handler,0, "short", NULL);
-		if (ret < 0){
+		int ret_even = request_irq ( GPIO_IRQ_even,interrupt_handler,0, "gamepad", &my_cdev);
+		if (ret_even < 0){
 		printk (KERN_ALERT "%s: request_irg failed with %d\n",
 __func__, ret);
 		}
 		
+		int ret_odd = request_irq ( GPIO_IRQ_odd,interrupt_handler,0, "gamepad", &my_cdev);
+		if (ret_odd < 0){
+		printk (KERN_ALERT "%s: request_irg failed with %d\n",
+__func__, ret);
+		}
 		printk (" Device opened \n ");
 		return 0;
 
@@ -122,13 +138,13 @@ static int my_release (struct inode *inode, struct file *filp){
 /*user progtam reads from the driver */
 static ssize_t my_read (struct inode *flip, char __user *buff, size_t count, loff_t *offp) {
 	
-	int8_t data = ~ioread8(GPIO_PC_DIN);
+	//int8_t data = ~ioread8(GPIO_PC_DIN);
 
 	//copy_to_user (to Destination address, in user space buffer, from Source address, in kernel space data, n number of bytes to copy)
-	copy_to_user(buff, &data, 1);
+	copy_to_user(buff, &status, 1);
 
 	
-	//printk (" Device is being read %d, %x  \n ",data,buff);
+	printk (" Device is being read %d, %d  \n ",status,buff);
 	return 0;
 }
 
@@ -187,8 +203,8 @@ static int my_probe (struct platform_device *dev)
 		 VA_GPIO = ioremap_nocache(GPIO->start, resource_size(GPIO));
 
 		/*get the IRQ numbers*/
-		GPIO_IRQ = platform_get_irq (dev,0);
-
+		GPIO_IRQ_even = platform_get_irq (dev,0);
+		GPIO_IRQ_odd  = platform_get_irq (dev,1);
 
 
 		
