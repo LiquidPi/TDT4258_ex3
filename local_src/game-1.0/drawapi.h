@@ -6,7 +6,7 @@
 #define COLORTYPE uint32_t
 #define COLOR(r, g, b) (r << 16 | (g << 8) | (b << ) )
 #define SETPIXEL(x, y, color) DrawPixel(x, y, color)
-
+#error "dont use this"
 #else
 
 #include "framebuffer_interface.h"

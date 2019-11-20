@@ -10,6 +10,24 @@ void drawRectangle(int x, int y, int width, int height) {
 			SETPIXEL(xp, yp);
 		}
 	}
+	int xb = x-20;
+	int yb = y-20;
+	int wb = width+20;
+	int hb = height+20;
+
+	if(xb < 0) {
+		xb = 0;
+	}
+	if(yb < 0) {
+		yb = 0;
+	}
+	if(wb+xb > WINDOW_W) {
+		wb = WINDOW_W-xb;
+	}
+	if(hb+yb > WINDOW_H) {
+		hb = WINDOW_H-yb;
+	}
+
 	DIRTY(x, y, width, height);
 }
 void drawLine(int x1, int y1, int x2, int y2) {
