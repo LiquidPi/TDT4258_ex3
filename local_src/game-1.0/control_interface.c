@@ -9,8 +9,7 @@
 
 #include "control_interface.h"
 
-int gd;
-char gdmap;
+int gd, gdmap;
 
 int InitializeControl (void)
 {
@@ -22,8 +21,8 @@ int InitializeControl (void)
 		return -1;
 	}
 	//Map it to memory
-	gdmap = (char)mmap(NULL, 1, PROT_READ | PROT_WRITE, MAP_SHARED, gd, 0);
-	if ((int)gdmap == -1)
+	gdmap = (int)mmap(NULL, 1, PROT_READ | PROT_WRITE, MAP_SHARED, gd, 0);
+	if (gdmap == -1)
 	{
 		printf("Error, couldn't map memory from gamepad driver.\n");
 		return -1;
@@ -48,7 +47,7 @@ struct gamepad GetCurrentInput (void)
 int DestroyController(void)
 {
 	//Close memory map
-	int err = munmap(gdmap, 1);
+	int err = munmap((void*)gdmap, 1);
 	//Close file
 	int err2 = close(gd);
 	if (err < 0 || err2 < 0)
