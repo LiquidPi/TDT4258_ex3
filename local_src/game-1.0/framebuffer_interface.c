@@ -57,7 +57,7 @@ void SetPixels(int x[], int y[], int size)
 {
 	int i;
 	for (i = 0; i < size; i++)
-		memory_map[getOffset(x,y)] = WHITE;
+		memory_map[getOffset(x[i],y[i])] = WHITE;
 }
 
 void ClearAll(void)
