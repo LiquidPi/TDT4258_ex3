@@ -46,7 +46,7 @@
 	
 	
 	/*store the button status*/
-	status = ~ioread8(GPIO_PC_DIN); // read interrupt source
+	status = ioread8(GPIO_PC_DIN); // read interrupt source
 	
     //writel(status, VA_GPIO + GPIO_IFC); // clear interrupt
     
