@@ -9,37 +9,17 @@
 
 #include "control_interface.h"
 
-int gd, gdmap;
-
-int InitializeControl (void)
-{
-	//Open driver file
-	gd = open("/dev/gamepad", O_RDONLY);
-	if (gd < 0)
-	{
-		printf("Error, could not open gamepad driver!\n");
-		return -1;
-	}
-	//Map it to memory
-	gdmap = (int)mmap(NULL, 1, PROT_READ | PROT_WRITE, MAP_SHARED, gd, 0);
-	if (gdmap == -1)
-	{
-		printf("Error, couldn't map memory from gamepad driver.\n");
-		return -1;
-	}
-	
-	return 0;
-}
-
 struct gamepad GetCurrentInput (void)
 {
 	int gd = open("/dev/gamepad", O_RDONLY);
 	if (gd < 0)
 		printf("Error, could not open gamepad driver!\n");
+		
 	char gdmap;
 	int err = read(gd, &gdmap, 1);
 	if (err < 0)
 		printf("Error, couldn't read gamepad driver!\n");
+		
 	struct gamepad gamepad_instance = {
 		gdmap & BUTTON_UP_0, 
 		gdmap & BUTTON_DOWN_0, 
@@ -53,18 +33,4 @@ struct gamepad GetCurrentInput (void)
 		printf("Error, couldn't close gamepad driver!\n");
 	
 	return gamepad_instance;
-}
-
-int DestroyController(void)
-{
-	//Close memory map
-	int err = munmap((void*)gdmap, 1);
-	//Close file
-	int err2 = close(gd);
-	if (err < 0 || err2 < 0)
-	{
-		printf("Error, DestroyController was unsuccessful!");
-		return -1;
-	}
-	return 0;
 }

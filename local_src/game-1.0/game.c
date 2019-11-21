@@ -1,5 +1,3 @@
-// CURRENTLY FUNCTIONS AS A TESTBENCH FOR GWINT.C
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h> //For sleep function; debug
@@ -187,7 +185,6 @@ int main(int argc, char** argv) {
 	ClearAll();
 	RefreshAll();
 
-	//InitializeControl();
 	while(1)
 	{
 		ClearAll();
@@ -212,7 +209,6 @@ int main(int argc, char** argv) {
 
 		DIRTY(0, 0, WINDOW_W, WINDOW_H);
 
-		//UpdateWindow();
 		//usleep(1000*16);
 		if(count > 100) {
 			count = 0;

@@ -17,22 +17,10 @@ struct gamepad {
 	bool start;
 };
 
-/*  Initialize the gamepad interface
- *  Input:  none
- *  Output: status code; 0 for successful, -1 for error.
- */
-int InitializeControl (void);
-
 /*  Get input from gamepad 
  *  Input:  none
  *  Output: struct gamepad, collection of various inputs signals from gamepad
  */
 struct gamepad GetCurrentInput (void);
-
-/*  Destroy the gamepad interface
- *  Input:  none
- *  Output: status code; 0 for successful, -1 for error.
- */
-int DestroyController(void);
 
 #endif
