@@ -1,8 +1,9 @@
 #include "drawapi.h"
-#define NAIVE_BORDER 10
+
 int r = 0;
 int g = 0;
 int b = 0;
+
 void drawRectangle(int x, int y, int width, int height) {
 	int yp, xp;
 	for(yp = y; yp < height+y; yp++) {
@@ -27,12 +28,4 @@ void drawRectangle(int x, int y, int width, int height) {
 	if(hb+yb > WINDOW_H) {
 		hb = WINDOW_H-yb-1;
 	}
-
-	//DIRTY(xb, yb, wb, hb);
-}
-void drawLine(int x1, int y1, int x2, int y2) {
-	//Do nothing for now
-}
-void blitImage(uint16_t* imageData, int width, int height) {
-	//Do nothing for now
 }

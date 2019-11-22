@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h> //For sleep function; debug
 #include <time.h>
 #include <stdlib.h>
 
 #include "drawapi.h"
-
 #include "control_interface.h"
 
 #define PADDLE_START 0
@@ -34,12 +32,13 @@ float ballDirection[] = {
 };
 
 char gameOver = 0;
-//Used for blinking
-int count = 0;
-
+int count = 0; //Used for blinking
 int paddles[] = {WINDOW_H/2-50, WINDOW_H/2-50};
 
-//Sqrt function as we werent allowed to link with the math library
+/*  Takes the (approx.) square root of a number
+ *  Input:  float num: number to be squared.
+ *  Output: float: the square root of num.
+ */
 float sqrt(float num)
 {
     float guess, e, upperbound;
@@ -54,7 +53,8 @@ float sqrt(float num)
     return guess;
 }
 
-//Draw game components
+/*  Collection of functions to draw different objects on screen
+ */
 void drawPaddle(int x, int y) {
 	drawRectangle(x, y, 15, 100);
 }
@@ -82,6 +82,11 @@ void drawScore() {
 	}
 }
 
+/*  Moves a paddle up or down.
+ *  Input:  int index: index of which paddle to move
+ 			int amount: how much to move paddle
+ *  Output: none
+ */
 void movePaddle(int index, int amount) {
 	if(index > 1)
 		return;
@@ -93,6 +98,11 @@ void movePaddle(int index, int amount) {
 	}
 }
 
+/*  Increase score of a player, and check if the game have ended.
+ *  Also deals with the direction the ball travels at the start of a new round.
+ *  Input:  int winner: index of player whose score to increase.
+ *  Output: none
+ */
 void someoneWon(int winner) {
 	scores[winner]++;
 	if(scores[winner] == MAX_SCORE) {
@@ -107,19 +117,21 @@ void someoneWon(int winner) {
 	ballDirection[1] = (float)(rand()%100)/100.0f-0.5f;
 }
 
-void normalizeBallDirection() {
-	float normalizedScalar = sqrt(ballDirection[0]*ballDirection[0]+ballDirection[1]*ballDirection[1]);
-	ballDirection[0] /= normalizedScalar;
-	ballDirection[1] /= normalizedScalar;
-}
-
+/*  Handle collision between ball and paddle.
+ *  Input:  float paddlePos: the position of the paddle
+ *  Output: none
+ */
 void paddleCollide(float paddlePos) {
 	ballDirection[0] = -ballDirection[0];
 	float dist = paddlePos-(bally-((float)BALL_SIZE/2.0f));
 	ballDirection[1] = dist/-100.0f;
-	//normalizeBallDirection();
 }
 
+/*  Update the state of the game.
+ *  Handles paddle movement, ball movement, and collisions.
+ *  Input:  none
+ *  Output: none
+ */
 void updateGameState() {
 	struct gamepad g = GetCurrentInput();
 	if(g.up_0) {
@@ -166,6 +178,10 @@ void updateGameState() {
 	}
 }
 
+/*  Reset game after game over, returning it to its inital state.
+ *  Input:  none
+ *  Output: none
+ */
 void resetGame() {
 	gameOver = 0;
 	scores[0] = 0;
@@ -178,6 +194,8 @@ void resetGame() {
 	bally	= (float)(WINDOW_H/2);
 }
 
+/*  Main loop
+ */
 int main(int argc, char** argv) {
 	srand(time(NULL));
 	INIT_DRAWING();
@@ -209,7 +227,6 @@ int main(int argc, char** argv) {
 
 		DIRTY(0, 0, WINDOW_W, WINDOW_H);
 
-		//usleep(1000*16);
 		if(count > 100) {
 			count = 0;
 		}
