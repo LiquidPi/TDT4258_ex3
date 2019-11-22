@@ -121,10 +121,6 @@ static int my_probe (struct platform_device *dev)
 		/*virtual memory base addresses */
 		 VA_GPIO = ioremap_nocache(GPIO->start, resource_size(GPIO));
 
-		/*get the IRQ numbers*/
-		GPIO_IRQ_even = platform_get_irq (dev,0);
-		GPIO_IRQ_odd  = platform_get_irq (dev,1);
-
 		return 0;
 }
 
